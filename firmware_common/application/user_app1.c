@@ -87,7 +87,18 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
- 
+  LedOff(CYAN) ;
+  LedOff(GREEN) ;
+  LedOff(YELLOW) ;
+  LedOff(ORANGE) ;
+  LedOff (BLUE) ;
+  LedOff (PURPLE) ;
+  LedOff (RED) ;
+  LedOff (WHITE) ;
+  LedOn (LCD_RED);
+  LedOn (LCD_GREEN);
+  LedOn (LCD_BLUE);
+
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -136,6 +147,114 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
+static u16 u16Counter = CYCLE_TIME ;
+ static u8 u8ColorIndex = 0;
+ 
+ 
+ 
+ switch (u16Counter)
+ {
+  case 1000:
+  LedPWM(WHITE, LED_PWM_100);
+  break;
+  
+  case 700:
+  LedPWM(PURPLE, LED_PWM_70);
+  break;
+ 
+  case 500: 
+  LedPWM(BLUE, LED_PWM_50);
+  break;
+  
+  case 350:
+  LedPWM(CYAN, LED_PWM_30); 
+  break;
+  
+  case 250:
+  LedPWM(GREEN, LED_PWM_20);
+  break;
+  
+ case 170:
+  LedPWM(YELLOW, LED_PWM_15);
+  break; 
+  
+ case 100:
+  LedPWM(ORANGE, LED_PWM_10);
+  break; 
+  
+  case 80:
+  LedPWM(RED, LED_PWM_5);
+  break;
+  
+ default:
+  break;
+ }  
+ u16Counter--;
+ if(u16Counter == 0)
+ {
+   u16Counter = CYCLE_TIME;
+   LedOff(CYAN) ;
+   LedOff(GREEN) ;
+   LedOff(YELLOW) ;
+   LedOff(ORANGE) ;
+   LedOff (BLUE) ;
+   LedOff (PURPLE) ;
+   LedOff (RED) ;
+   LedOff (WHITE) ;
+   
+   if(u8ColorIndex == 7)
+   {
+     u8ColorIndex = 0 ;
+   }
+   switch (u8ColorIndex)
+   {
+          case 0:
+          LedOn (LCD_RED);
+          LedOn(LCD_GREEN);
+          LedOn(LCD_BLUE);
+          break;
+          case 1:
+          LedOn (LCD_RED);
+          LedOff(LCD_GREEN);
+          LedOn(LCD_BLUE);
+          break;
+          case 2:
+          LedOff (LCD_RED);
+          LedOff(LCD_GREEN);
+          LedOn(LCD_BLUE);
+          break;
+          case 3:
+          LedOff (LCD_RED);
+          LedOn(LCD_GREEN);
+          LedOn(LCD_BLUE);
+           break;
+          case 4:
+          LedOff (LCD_RED);
+          LedOn(LCD_GREEN);
+          LedOff(LCD_BLUE);
+           break;
+          case 5:
+          LedOn (LCD_RED);
+          LedOn(LCD_GREEN);
+          LedOff(LCD_BLUE);
+           break;
+          case 6:
+          LedOn (LCD_RED);
+          LedOff(LCD_GREEN);
+          LedOff(LCD_BLUE);
+           break;
+          default:
+          LedOff (LCD_RED);
+          LedOff(LCD_GREEN);
+          LedOff(LCD_BLUE);
+           break;
+
+   }
+   u8ColorIndex++;
+ }
+ 
+ 
+ 
 
 } /* end UserApp1SM_Idle() */
     
