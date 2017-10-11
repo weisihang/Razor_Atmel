@@ -156,34 +156,42 @@ static u16 u16Counter = CYCLE_TIME ;
  {
   case 1000:
   LedPWM(WHITE, LED_PWM_100);
+  LedOff (RED);
   break;
   
   case 700:
   LedPWM(PURPLE, LED_PWM_70);
+  LedOff (WHITE);
   break;
  
   case 500: 
   LedPWM(BLUE, LED_PWM_50);
+  LedOff (PURPLE);
   break;
   
   case 350:
   LedPWM(CYAN, LED_PWM_30); 
+  LedOff (BLUE);
   break;
   
   case 250:
   LedPWM(GREEN, LED_PWM_20);
+  LedOff (CYAN);
   break;
   
  case 170:
   LedPWM(YELLOW, LED_PWM_15);
+  LedOff (GREEN);
   break; 
   
  case 100:
   LedPWM(ORANGE, LED_PWM_10);
+  LedOff (YELLOW);
   break; 
   
   case 80:
   LedPWM(RED, LED_PWM_5);
+  LedOff (ORANGE);
   break;
   
  default:
