@@ -87,7 +87,14 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
- 
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOff(ORANGE);
+  LedOn(RED);
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -136,7 +143,112 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
-
+  static u8 aePinNumber[PINLENGTH]={1,1,1,1,1,1,1,1,1,1};
+  static u8 u8PinCreateCounter = 0;
+  static u8 u8PinTestCounter = 0;
+  static bool bPinIsWrong = FALSE;
+  static bool bButtonIsPressed = FALSE;
+  static bool bPinBeingRevised = FALSE;
+  
+  if(!bPinBeingRevised)// perform the code only when it is NOT in the model of revision
+  {
+    if(WasButtonPressed(BUTTON3))
+    {
+      ButtonAcknowledge(BUTTON3);
+      if((u8PinTestCounter==PINLENGTH)&&(!bPinIsWrong))
+      {
+        LedOff(RED);
+        LedBlink(GREEN,LED_2HZ);
+      }
+      else
+      {
+        LedOff(GREEN);
+        LedBlink(RED, LED_2HZ);
+      }
+      u8PinTestCounter = 0;
+      bPinIsWrong = FALSE;
+    }//if BUTTON3(CONFIRMATION of the INPUT) was pressed, determine whether the password is true
+    else
+    {
+      if(WasButtonPressed(BUTTON0))
+      {
+        ButtonAcknowledge(BUTTON0);
+        if((aePinNumber[u8PinTestCounter])!=BUTTON0)
+        {
+          bPinIsWrong = TRUE;
+        }
+        u8PinTestCounter++;
+      }
+      if(WasButtonPressed(BUTTON1))
+      {
+        ButtonAcknowledge(BUTTON1);
+        if((aePinNumber[u8PinTestCounter])!=BUTTON1)
+        {
+          bPinIsWrong = TRUE;
+        }
+        u8PinTestCounter++;
+      }
+      if(WasButtonPressed(BUTTON2))
+      {
+        ButtonAcknowledge(BUTTON2);
+        if((aePinNumber[u8PinTestCounter])!=BUTTON2)
+        {
+          bPinIsWrong = TRUE;
+        }
+        u8PinTestCounter++;
+      }// if any button was pressed, then check the whether the password is true according to 
+      //the one stored in the array.
+    }
+  }
+  if(IsButtonHeld(BUTTON3,2000))
+  {
+    ButtonAcknowledge(BUTTON3);
+    LedOff(RED);
+    LedOff(GREEN);
+    LedBlink(RED, LED_2HZ);
+    LedBlink(GREEN, LED_2HZ); 
+    bPinBeingRevised = TRUE;
+  }//if the BUTTON3 was held for a long time, then enter the model of revisoin
+  if(bPinBeingRevised)
+  {
+    if(u8PinCreateCounter<PINLENGTH)
+    {
+      if(WasButtonPressed(BUTTON0)&&(!bButtonIsPressed))
+      {
+        ButtonAcknowledge(BUTTON0);
+        bButtonIsPressed = TRUE;
+        aePinNumber[u8PinCreateCounter]=0;
+        u8PinCreateCounter++;
+      }
+      if(WasButtonPressed(BUTTON1)&&(!bButtonIsPressed))
+      {
+        ButtonAcknowledge(BUTTON1);
+        bButtonIsPressed = TRUE;
+        aePinNumber[u8PinCreateCounter]=1;
+        u8PinCreateCounter++;
+      }
+      if(WasButtonPressed(BUTTON2)&&(!bButtonIsPressed))
+      {
+        ButtonAcknowledge(BUTTON2);
+        bButtonIsPressed = TRUE;
+        aePinNumber[u8PinCreateCounter]=2;
+        u8PinCreateCounter++;
+      }
+      bButtonIsPressed = FALSE;
+    }
+  }//In this revision model, if any buttom of this 3 was pressed, then threw it to the array
+  if(u8PinCreateCounter==PINLENGTH)
+  {
+    if(WasButtonPressed(BUTTON3))
+    {
+      ButtonAcknowledge(BUTTON3);
+        LedOff(GREEN);
+        LedOn(RED);
+        u8PinCreateCounter= 0;
+        bPinBeingRevised = FALSE;
+    }
+  }//if the BUTTON3 is pressed and the length is up to PINLENGTH, then turn on the
+  //RED light to show the state was locked
 } /* end UserApp1SM_Idle() */
     
 
