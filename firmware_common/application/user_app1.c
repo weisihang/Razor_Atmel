@@ -59,7 +59,7 @@ Variable names shall start with "UserApp1_" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type UserApp1_StateMachine;            /* The state machine function pointer */
 //static u32 UserApp1_u32Timeout;                      /* Timeout counter used across states */
-
+static u8 UserApp_au8UserInputBuffer[U16_USER_INPUT_BUFFER_SIZE]; 
 
 /**********************************************************************************************************************
 Function Definitions
@@ -87,7 +87,11 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
- 
+  for(u16 i = 0; i < U16_USER_INPUT_BUFFER_SIZE  ; i++)
+  {
+    UserApp_au8UserInputBuffer[i] = 0;
+  }
+
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -136,7 +140,69 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
-
+  extern u8 G_au8DebugScanfBuffer[];  /* From debug.c */
+  extern u8 G_u8DebugScanfCharCount;  /* From debug.c */
+  static u8 u8MyName[]="WeiSihang"; 
+  static u8 u8BufferMessage[]   = "\n\rBuffer contents:\n\r";
+  static u8 u8EmptyMessage[]="\n\rEMPTY!";
+  static u8 u8NumNameMessage[] = "\n\rTimes of your name's appearances in buffer: ";
+  static u16 u16NameCounter=0;
+  static u8 u8CharCount;
+  static u8 u8CompareCount=0;
+  static u8 u8Flag;
+  static bool bFlagOfName = FALSE;
+  
+  
+  if(WasButtonPressed(BUTTON1))
+  {
+    ButtonAcknowledge(BUTTON1);
+    for(u16 i = 0; i < U16_USER_INPUT_BUFFER_SIZE;i++)
+    {
+      UserApp_au8UserInputBuffer[i] = G_au8DebugScanfBuffer[i];
+    }
+    /* Read the buffer and print the contents */
+    u8CharCount = DebugScanf(UserApp_au8UserInputBuffer);
+    UserApp_au8UserInputBuffer[u8CharCount] = '\0';
+    while(UserApp_au8UserInputBuffer[u8CompareCount] != '\0')
+    {
+      if(UserApp_au8UserInputBuffer[u8CompareCount]=='W')
+      {
+        bFlagOfName = TRUE;
+        u8Flag=u8CompareCount;
+      }
+      if(bFlagOfName)
+      {
+        if((u8CompareCount-u8Flag)<8)
+        {
+          if(UserApp_au8UserInputBuffer[u8CompareCount]!=u8MyName[u8CompareCount-u8Flag])
+          {
+            bFlagOfName = FALSE;
+          }
+        }
+        if((u8CompareCount-u8Flag)==8)
+        {
+          u16NameCounter++;
+          bFlagOfName = FALSE;
+        }
+      }
+      u8CompareCount++;
+    }
+    DebugPrintf(u8BufferMessage);
+    if(u8CharCount > 0)
+    {
+      DebugPrintf(UserApp_au8UserInputBuffer);
+    }
+    else
+    {
+      DebugPrintf(u8EmptyMessage);
+    }
+    DebugPrintf(u8NumNameMessage);
+    DebugPrintNumber(u16NameCounter);
+    DebugLineFeed();
+    u16NameCounter=0;
+    u8CompareCount=0;
+  }
+  
 } /* end UserApp1SM_Idle() */
     
 
