@@ -145,17 +145,21 @@ static void UserApp1SM_Idle(void)
   static u8 u8MyName[]="WeiSihang"; 
   static u8 u8BufferMessage[]   = "\n\rBuffer contents:\n\r";
   static u8 u8EmptyMessage[]="\n\rEMPTY!";
+  static u8 u8OutPut[]="\n\r*****\n\r";
+  static u8 u8OutPutNum=0;
   static u8 u8NumNameMessage[] = "\n\rTimes of your name's appearances in buffer: ";
   static u16 u16NameCounter=0;
+  static u32 u32TimeCounter=0;
   static u8 u8CharCount;
+  static u8 u8CountOfStar=0;
   static u8 u8CompareCount=0;
   static u8 u8Flag;
+  static u16 u16RecordOfNameCounter;
   static bool bFlagOfName = FALSE;
   
   
-  if(WasButtonPressed(BUTTON1))
+  if(u32TimeCounter==100000)
   {
-    ButtonAcknowledge(BUTTON1);
     for(u16 i = 0; i < U16_USER_INPUT_BUFFER_SIZE;i++)
     {
       UserApp_au8UserInputBuffer[i] = G_au8DebugScanfBuffer[i];
@@ -197,10 +201,38 @@ static void UserApp1SM_Idle(void)
       DebugPrintf(u8EmptyMessage);
     }
     DebugPrintf(u8NumNameMessage);
-    DebugPrintNumber(u16NameCounter);
+    DebugPrintf(u8OutPut);
+    u16RecordOfNameCounter=u16NameCounter;
+    while(u16NameCounter>1)
+    {
+      u16NameCounter=u16NameCounter/10;
+      u8OutPutNum++;
+    }
+    if(u16NameCounter==0)
+    {
+      u8OutPutNum=1;
+    }
+    for(u8 i = 0;i<(5-u8OutPutNum)/2;i++)
+    {
+      DebugPrintf("*");
+      u8CountOfStar++;
+    }
+    DebugPrintNumber(u16RecordOfNameCounter);
+    for(u8 i = 0;i<(5-u8CountOfStar-u8OutPutNum);i++)
+    {
+      DebugPrintf("*");
+    }
+    DebugPrintf(u8OutPut);
     DebugLineFeed();
     u16NameCounter=0;
     u8CompareCount=0;
+    u32TimeCounter=0;
+    u8OutPutNum=0;
+    u8CountOfStar=0;
+  }
+  else
+  {
+    u32TimeCounter++;
   }
   
 } /* end UserApp1SM_Idle() */
