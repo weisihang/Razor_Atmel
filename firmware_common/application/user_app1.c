@@ -154,7 +154,7 @@ static void UserApp1SM_Idle(void)
   u8NumberOfInput= DebugScanf(G_au8DebugScanfBuffer);
   if(u8NumberOfInput>0)
   {
-    UserApp_au8UserInputBuffer[u16Counter] = G_au8DebugScanfBuffer[u16Counter];
+    UserApp_au8UserInputBuffer[u16Counter] = G_au8DebugScanfBuffer[0];
     if(UserApp_au8UserInputBuffer[u16Counter]=='W')
     {
       bFlagOfName = TRUE;
