@@ -154,10 +154,7 @@ static void UserApp1SM_Idle(void)
   u8NumberOfInput= DebugScanf(G_au8DebugScanfBuffer);
   if(u8NumberOfInput>0)
   {
-    for(u16 i = 0; i++ < u8NumberOfInput; u16Counter++)
-    {
-      UserApp_au8UserInputBuffer[u16Counter] = G_au8DebugScanfBuffer[u16Counter];
-    }
+    UserApp_au8UserInputBuffer[u16Counter] = G_au8DebugScanfBuffer[u16Counter];
     if(UserApp_au8UserInputBuffer[u16Counter]=='W')
     {
       bFlagOfName = TRUE;
@@ -180,8 +177,7 @@ static void UserApp1SM_Idle(void)
     }
    DebugPrintf(u8NumCharsMessage);
    DebugPrintNumber(u16NameCounter);
-
-
+   u16Counter++;
   }
 
 } /* end UserApp1SM_Idle() */
