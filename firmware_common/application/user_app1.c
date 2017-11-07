@@ -59,6 +59,7 @@ Variable names shall start with "UserApp1_" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type UserApp1_StateMachine;            /* The state machine function pointer */
 //static u32 UserApp1_u32Timeout;                      /* Timeout counter used across states */
+static u8 UserApp_au8UserInputBuffer[U16_USER_INPUT_BUFFER_SIZE  ];  
 
 
 /**********************************************************************************************************************
@@ -87,7 +88,11 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
- 
+ for(u16 i = 0; i < U16_USER_INPUT_BUFFER_SIZE  ; i++)
+  {
+    UserApp_au8UserInputBuffer[i] = 0;
+  }
+
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -136,6 +141,12 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
+  extern u8 G_au8DebugScanfBuffer[];  /* From debug.c */
+  extern u8 G_u8DebugScanfCharCount;  /* From debug.c */
+  static u8 u8NumCharsMessage[] = "\n\rEnter the strings : ";
+  
+  
+
 
 } /* end UserApp1SM_Idle() */
     
