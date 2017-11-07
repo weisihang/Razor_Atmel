@@ -143,10 +143,46 @@ static void UserApp1SM_Idle(void)
 {
   extern u8 G_au8DebugScanfBuffer[];  /* From debug.c */
   extern u8 G_u8DebugScanfCharCount;  /* From debug.c */
-  static u8 u8NumCharsMessage[] = "\n\rEnter the strings : ";
+  static u8 u8NumCharsMessage[] = "\n\rNames Times in the Strings: ";
+  static u8 au8MyName[]="WeiSihang";
+  static bool bFlagOfName = FALSE;
+  static u16 u16Counter=0;
+  static u16 u16NameCounter=0;
+  static u8 u8Flag;
+  static u8 u8NumberOfInput;
   
-  
+  u8NumberOfInput= DebugScanf(G_au8DebugScanfBuffer);
+  if(u8NumberOfInput>0)
+  {
+    for(u16 i = 0; i++ < u8NumberOfInput; u16Counter++)
+    {
+      UserApp_au8UserInputBuffer[u16Counter] = G_au8DebugScanfBuffer[u16Counter];
+    }
+    if(UserApp_au8UserInputBuffer[u16Counter]=='W')
+    {
+      bFlagOfName = TRUE;
+      u8Flag=u16Counter;
+    }
+    if(bFlagOfName)
+    {
+      if((u16Counter-u8Flag)<8)
+      {
+        if(UserApp_au8UserInputBuffer[u16Counter]!=au8MyName[u16Counter-u8Flag])
+        {
+          bFlagOfName = FALSE;
+        }
+      }
+      if((u16Counter-u8Flag)==8)
+      {
+        u16NameCounter++;
+        bFlagOfName = FALSE;
+      }
+    }
+   DebugPrintf(u8NumCharsMessage);
+   DebugPrintNumber(u16NameCounter);
 
+
+  }
 
 } /* end UserApp1SM_Idle() */
     
