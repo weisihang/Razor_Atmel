@@ -158,21 +158,22 @@ static void UserApp1SM_Idle(void)
   static bool bFlagOfName = FALSE;
   
   
-  if(u32TimeCounter==100000)
+  if(u32TimeCounter==100000)//Every ten seconds check the buffer and reset the buffer
   {
     for(u16 i = 0; i < U16_USER_INPUT_BUFFER_SIZE;i++)
     {
-      UserApp_au8UserInputBuffer[i] = G_au8DebugScanfBuffer[i];
+      UserApp_au8UserInputBuffer[i] = G_au8DebugScanfBuffer[i];// use another array to restore
+      //the strings and print it out
     }
     /* Read the buffer and print the contents */
-    u8CharCount = DebugScanf(UserApp_au8UserInputBuffer);
+    u8CharCount = DebugScanf(UserApp_au8UserInputBuffer);//to check out the length of the strings
     UserApp_au8UserInputBuffer[u8CharCount] = '\0';
     while(UserApp_au8UserInputBuffer[u8CompareCount] != '\0')
     {
       if(UserApp_au8UserInputBuffer[u8CompareCount]=='W')
       {
         bFlagOfName = TRUE;
-        u8Flag=u8CompareCount;
+        u8Flag=u8CompareCount;// set a flag showing the begening of the compare programme
       }
       if(bFlagOfName)
       {
@@ -180,13 +181,13 @@ static void UserApp1SM_Idle(void)
         {
           if(UserApp_au8UserInputBuffer[u8CompareCount]!=u8MyName[u8CompareCount-u8Flag])
           {
-            bFlagOfName = FALSE;
+            bFlagOfName = FALSE;// compare the strings with the array restoring the name
           }
         }
         if((u8CompareCount-u8Flag)==8)
         {
           u16NameCounter++;
-          bFlagOfName = FALSE;
+          bFlagOfName = FALSE;// if results of the comparison is true, then adds the counter;
         }
       }
       u8CompareCount++;
@@ -203,7 +204,7 @@ static void UserApp1SM_Idle(void)
     DebugPrintf(u8NumNameMessage);
     DebugPrintf(u8OutPut);
     u16RecordOfNameCounter=u16NameCounter;
-    while(u16NameCounter>1)
+    while(u16NameCounter>1)//to determine the digits of the numbers
     {
       u16NameCounter=u16NameCounter/10;
       u8OutPutNum++;
@@ -221,7 +222,7 @@ static void UserApp1SM_Idle(void)
     for(u8 i = 0;i<(5-u8CountOfStar-u8OutPutNum);i++)
     {
       DebugPrintf("*");
-    }
+    }// to adjust the output of the number
     DebugPrintf(u8OutPut);
     DebugLineFeed();
     u16NameCounter=0;
