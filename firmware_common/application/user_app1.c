@@ -63,6 +63,7 @@ static u8 UserApp_au8MyName[] = "Sihang Wei";
 static u8 UserApp_au8LCD1[] = "Your choice?";   
 static u8 UserApp_au8LCD2[] = "B0:DISPLAY";
 static u8 UserApp_au8LCD3[] = "B1:DEBUG";
+static u8 UserApp_au8LCD4[] = "B3:MENU";
 
 /**********************************************************************************************************************
 Function Definitions
@@ -92,6 +93,7 @@ void UserApp1Initialize(void)
 {
   //LCDCommand(LCD_CLEAR_CMD);
   LCDMessage(LINE1_START_ADDR, UserApp_au8LCD1);
+  LCDMessage(LINE1_START_ADDR+13,UserApp_au8LCD4);
   LCDMessage(LINE2_START_ADDR,UserApp_au8LCD2); 
   LCDMessage(LINE2_START_ADDR+12,UserApp_au8LCD3);  
 
@@ -144,6 +146,12 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
+ if(WasButtonPressed(BUTTON0))
+ {
+   ButtonAcknowledge(BUTTON0);
+   
+
+ }
  
 } /* end UserApp1SM_Idle() */
     
