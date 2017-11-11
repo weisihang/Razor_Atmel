@@ -59,7 +59,10 @@ Variable names shall start with "UserApp1_" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type UserApp1_StateMachine;            /* The state machine function pointer */
 //static u32 UserApp1_u32Timeout;                      /* Timeout counter used across states */
-
+static u8 UserApp_au8MyName[] = "Sihang Wei";     
+static u8 UserApp_au8LCD1[] = "Your choice?";   
+static u8 UserApp_au8LCD2[] = "B0:DISPLAY";
+static u8 UserApp_au8LCD3[] = "B1:DEBUG";
 
 /**********************************************************************************************************************
 Function Definitions
@@ -87,6 +90,11 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+  //LCDCommand(LCD_CLEAR_CMD);
+  LCDMessage(LINE1_START_ADDR, UserApp_au8LCD1);
+  LCDMessage(LINE2_START_ADDR,UserApp_au8LCD2); 
+  LCDMessage(LINE2_START_ADDR+12,UserApp_au8LCD3);  
+
  
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -136,7 +144,7 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
-
+ 
 } /* end UserApp1SM_Idle() */
     
 
