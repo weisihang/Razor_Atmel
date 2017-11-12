@@ -64,6 +64,9 @@ static u8 UserApp_au8LCD1[] = "Your choice?";
 static u8 UserApp_au8LCD2[] = "B0:DISPLAY";
 static u8 UserApp_au8LCD3[] = "B1:DEBUG";
 static u8 UserApp_au8LCD4[] = "B3:MENU";
+static u8 UserApp_au8LCD5[] = "B0:LEFT";
+static u8 UserApp_au8LCD6[] = "B1:RIGHT";
+static u8 UserApp_CursorPosition;
 
 /**********************************************************************************************************************
 Function Definitions
@@ -96,6 +99,7 @@ void UserApp1Initialize(void)
   LCDMessage(LINE1_START_ADDR+13,UserApp_au8LCD4);
   LCDMessage(LINE2_START_ADDR,UserApp_au8LCD2); 
   LCDMessage(LINE2_START_ADDR+12,UserApp_au8LCD3);  
+  UserApp_CursorPosition = LINE1_START_ADDR;
 
  
   /* If good initialization, set state to Idle */
@@ -146,12 +150,71 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
- if(WasButtonPressed(BUTTON0))
- {
-   ButtonAcknowledge(BUTTON0);
-   
+  static u16 u16MovementCounter = 0;
+  static bool bMoveLeft = FALSE;
+  static bool bMoveRight = FALSE;
+  static bool bexcuationOfMove = FALSE;
 
- }
+  if(!bexcuationOfMove&&!bMoveLeft&&!bMoveRight)
+  {
+    if(WasButtonPressed(BUTTON0))
+    {
+      ButtonAcknowledge(BUTTON0);
+      LCDCommand(LCD_CLEAR_CMD);
+      LCDMessage(LINE1_START_ADDR, UserApp_au8MyName);
+      LCDMessage(LINE2_START_ADDR, UserApp_au8LCD5);
+      LCDMessage(LINE2_START_ADDR+8, UserApp_au8LCD6);
+      bexcuationOfMove = TRUE;
+    }
+  }
+  if(bexcuationOfMove&&!bMoveLeft&&!bMoveRight)
+  {
+    if(WasButtonPressed(BUTTON0))
+    {
+      ButtonAcknowledge(BUTTON0);
+      bMoveLeft = TRUE;
+    }
+  }
+  if(bMoveLeft)
+  {
+    if(u16MovementCounter==1000)
+    {
+      if(UserApp_CursorPosition==LINE1_END_ADDR)
+      {
+        UserApp_CursorPosition=LINE1_START_ADDR;
+      }
+      LCDCommand(LCD_CLEAR_CMD);
+      UserApp_CursorPosition++;
+      LCDMessage(LINE1_START_ADDR+UserApp_CursorPosition, UserApp_au8MyName);
+      LCDMessage(LINE2_START_ADDR, UserApp_au8LCD4);
+      LCDMessage(LINE2_START_ADDR+8, UserApp_au8LCD6);
+      u16MovementCounter=0;
+    }
+    else
+    {
+      u16MovementCounter++;
+    } 
+  }
+  if(bMoveRight)
+  {
+    if(u16MovementCounter==1000)
+    {
+      if(UserApp_CursorPosition==LINE1_START_ADDR)
+      {
+        UserApp_CursorPosition=LINE1_END_ADDR;
+      }
+      LCDCommand(LCD_CLEAR_CMD);
+      UserApp_CursorPosition++;
+      LCDMessage(LINE1_START_ADDR-UserApp_CursorPosition, UserApp_au8MyName);
+      LCDMessage(LINE2_START_ADDR, UserApp_au8LCD4);
+      LCDMessage(LINE2_START_ADDR+8, UserApp_au8LCD6);
+      u16MovementCounter=0;
+    }
+    else
+    {
+      u16MovementCounter++;
+    } 
+  }
  
 } /* end UserApp1SM_Idle() */
     
