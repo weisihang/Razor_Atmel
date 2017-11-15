@@ -173,8 +173,12 @@ static void UserApp1SM_Idle(void)
   static bool bMoveRight = FALSE;
   static bool bexcuationOfMove = FALSE;
   static bool bDebug = FALSE;
-  static u8 u8ArrayCount = 0;
   static u8 u8CharCount = 0;
+  static u16 u16TimeCounter = 0;
+  static bool bFlashOfScreen = FALSE;
+  static u8 u8FlashOfScreen = 0;
+  static u8 u8EnterNum = 0;
+  static u8 u8FlagOfEnter;
   
   if(!bexcuationOfMove&&!bMoveLeft&&!bMoveRight&&!bDebug)
   {
@@ -195,19 +199,6 @@ static void UserApp1SM_Idle(void)
       LCDMessage(LINE2_START_ADDR, UserApp_au8LCD8);
       LCDMessage(LINE2_START_ADDR+13, UserApp_au8LCD4);
       bDebug = TRUE;
-    /*  if(G_au8DebugScanfBuffer[u8ArrayCount] != '\n')
-      {
-        UserApp_au8UserInputBuffer[u8ArrayCount] = G_au8DebugScanfBuffer[u8ArrayCount];
-        u8ArrayCount++;
-      }
-      u8ArrayCount=0;
-      u8CharCount = DebugScanf(UserApp_au8UserInputBuffer);
-      UserApp_au8UserInputBuffer[u8CharCount] = '\0';
-      if(u8CharCount<=20)
-      {
-        LCDCommand(LCD_CLEAR_CMD);
-        LCDMessage/(LINE1_START_ADDR, UserApp_au8UserInputBuffer);
-      }*/
     }
   }
   if(bexcuationOfMove&&!bMoveLeft&&!bMoveRight&&!bDebug)
@@ -415,25 +406,105 @@ static void UserApp1SM_Idle(void)
     LedOff(RED); 
     PWMAudioOff(BUZZER1);
     bDebug = FALSE;
+    u16TimeCounter=0;
+    bFlashOfScreen=FALSE;
+    u8FlashOfScreen=0;
+    u8EnterNum=0;
+    
+  }
+  if(bFlashOfScreen)
+  {
+    if(u16TimeCounter==1500)
+    {
+      u16TimeCounter=0;
+      u8FlashOfScreen++;
+      if((u8FlashOfScreen/2)==1)
+      {
+        LCDCommand(LCD_CLEAR_CMD);
+        LCDMessage(LINE1_START_ADDR, UserApp_au8UserInputBuffer+40);
+        LCDMessage(LINE2_START_ADDR, UserApp_au8UserInputBuffer+60);
+        u8FlashOfScreen=0;
+      }
+      else
+      {
+        LCDCommand(LCD_CLEAR_CMD);
+        LCDMessage(LINE1_START_ADDR, UserApp_au8UserInputBuffer);
+        LCDMessage(LINE2_START_ADDR, UserApp_au8UserInputBuffer+20);
+      }
+    }
+    else
+    {
+      u16TimeCounter++;
+    }
   }
   if(bDebug)
   {
-    while(G_au8DebugScanfBuffer[u8ArrayCount] != '\n')
+    if(WasButtonPressed(BUTTON0))
     {
-      UserApp_au8UserInputBuffer[u8ArrayCount] = G_au8DebugScanfBuffer[u8ArrayCount];
-      u8ArrayCount++;
-    }
-    u8ArrayCount=0;
-    u8CharCount = DebugScanf(UserApp_au8UserInputBuffer);
-    UserApp_au8UserInputBuffer[u8CharCount] = '\0';
-    if(u8CharCount<=20)
-    {
-      LCDCommand(LCD_CLEAR_CMD);
-      LCDMessage(LINE1_START_ADDR, UserApp_au8UserInputBuffer);
+      ButtonAcknowledge(BUTTON0);
+      for(u16 i = 0; i < U16_USER_INPUT_BUFFER_SIZE ; i++)
+      {
+        if(G_au8DebugScanfBuffer[i]=='\r')
+        {
+          u8EnterNum++;
+          u8FlagOfEnter=i;
+        }
+        UserApp_au8UserInputBuffer[i] = G_au8DebugScanfBuffer[i];
+      }
+      u8CharCount = DebugScanf(UserApp_au8UserInputBuffer);
+      UserApp_au8UserInputBuffer[u8CharCount] = '\0';
+      if(u8EnterNum==0)
+      {
+        if(u8CharCount==0)
+        {
+          bFlashOfScreen=FALSE;
+          LCDCommand(LCD_CLEAR_CMD);
+          LCDMessage(LINE1_START_ADDR, UserApp_au8LCD7);
+          LCDMessage(LINE2_START_ADDR, UserApp_au8LCD8);
+          LCDMessage(LINE2_START_ADDR+13, UserApp_au8LCD4);
+        }
+        if(u8CharCount<=20)
+        {
+          bFlashOfScreen=FALSE;
+          LCDCommand(LCD_CLEAR_CMD);
+          LCDMessage(LINE1_START_ADDR, UserApp_au8UserInputBuffer);
+        }
+        if(u8CharCount>20 && u8CharCount<=40)
+        {
+          bFlashOfScreen=FALSE;
+          LCDCommand(LCD_CLEAR_CMD);
+          LCDMessage(LINE1_START_ADDR, UserApp_au8UserInputBuffer);
+          LCDMessage(LINE2_START_ADDR, UserApp_au8UserInputBuffer+20);
+        }
+        if(u8CharCount>40 && u8CharCount<=80)
+        {
+          bFlashOfScreen=TRUE;
+        }
+        if(u8CharCount>80)
+        {
+          LCDCommand(LCD_CLEAR_CMD);
+          LCDMessage(LINE1_START_ADDR, UserApp_au8LCD7);
+          LCDMessage(LINE2_START_ADDR, UserApp_au8LCD8);
+          LCDMessage(LINE2_START_ADDR+13, UserApp_au8LCD4);
+        }
+      }
+      if(u8EnterNum==1)
+      {
+        LCDCommand(LCD_CLEAR_CMD);
+        LCDMessage(LINE1_START_ADDR, UserApp_au8UserInputBuffer);
+        LCDClearChars(LINE1_START_ADDR+u8FlagOfEnter,u8CharCount-u8FlagOfEnter);
+        LCDMessage(LINE2_START_ADDR, UserApp_au8UserInputBuffer+u8FlagOfEnter+1);
+      }
+      if(u8EnterNum>1)
+      {
+        LCDCommand(LCD_CLEAR_CMD);
+        LCDMessage(LINE1_START_ADDR, "Too Many \"ENTER\"");
+        LCDMessage(LINE2_START_ADDR+13, UserApp_au8LCD4);
+      }
     }
   }
 } /* end UserApp1SM_Idle() */
-    
+
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
