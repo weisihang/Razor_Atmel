@@ -117,9 +117,7 @@ void UserApp1Initialize(void)
   {
     UserApp_au8UserInputBuffer[i] = 0;
   }
-
-
- 
+// to make a menu for the user to choose 
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -191,6 +189,7 @@ static void UserApp1SM_Idle(void)
       LCDMessage(LINE2_START_ADDR+8, UserApp_au8LCD6);
       bexcuationOfMove = TRUE;
     }
+    //to goino the sub-menu of the annimation of my name
     if(WasButtonPressed(BUTTON1))
     {
       ButtonAcknowledge(BUTTON1);
@@ -200,6 +199,7 @@ static void UserApp1SM_Idle(void)
       LCDMessage(LINE2_START_ADDR+13, UserApp_au8LCD4);
       bDebug = TRUE;
     }
+    //to goino the sub-menu of the debug model
   }
   if(bexcuationOfMove&&!bMoveLeft&&!bMoveRight&&!bDebug)
   {
@@ -213,10 +213,11 @@ static void UserApp1SM_Idle(void)
       ButtonAcknowledge(BUTTON1);
       bMoveRight = TRUE;
     }
-  }
+  }//to choose the way of my name move
   if(bMoveRight)
   {
     PWMAudioOn(BUZZER1);
+    /*to set the exact movemeent: every one sec, move one step*/
     if(u16MovementCounter==1000)
     {
       if(UserApp_CursorPosition>LINE1_END_ADDR)
@@ -234,6 +235,7 @@ static void UserApp1SM_Idle(void)
     {
       u16MovementCounter++;
     } 
+    /* in case the user want to interrupt the annimation to move another way*/
     if(WasButtonPressed(BUTTON0))
     {
       LedOff(WHITE);
@@ -249,6 +251,7 @@ static void UserApp1SM_Idle(void)
       bMoveLeft = TRUE;
       u16MovementCounter = 0;
     }
+    /*to set the LED to make the annimation*/
     if((UserApp_CursorPosition==LINE1_START_ADDR)||(UserApp_CursorPosition>LINE1_END_ADDR))
     {
       PWMAudioSetFrequency(BUZZER1, 1000);
@@ -298,7 +301,7 @@ static void UserApp1SM_Idle(void)
       LedOff(ORANGE);
     } 
   }
-  
+  /*the same step as the above code to make another movement*/
   if(bMoveLeft)
   {
     PWMAudioOn(BUZZER1);
@@ -384,6 +387,7 @@ static void UserApp1SM_Idle(void)
       LedOff(PURPLE);
     } 
   }
+  /*the step to enter into the menu at any state*/
   if(WasButtonPressed(BUTTON3))
   {
     ButtonAcknowledge(BUTTON3);
@@ -393,6 +397,7 @@ static void UserApp1SM_Idle(void)
     LCDMessage(LINE2_START_ADDR,UserApp_au8LCD2); 
     LCDMessage(LINE2_START_ADDR+12,UserApp_au8LCD3);  
     UserApp_CursorPosition = LINE1_START_ADDR;
+    /*to set every value to the first state*/
     bMoveLeft = FALSE;
     bMoveRight = FALSE;
     bexcuationOfMove = FALSE;
@@ -412,6 +417,7 @@ static void UserApp1SM_Idle(void)
     u8EnterNum=0;
     
   }
+  /*to scroll up the screen to display and repeat that step every 1.5 sec*/
   if(bFlashOfScreen)
   {
     if(u16TimeCounter==1500)
@@ -437,11 +443,13 @@ static void UserApp1SM_Idle(void)
       u16TimeCounter++;
     }
   }
+  /*to gointo the debug model*/
   if(bDebug)
   {
     if(WasButtonPressed(BUTTON0))
     {
       ButtonAcknowledge(BUTTON0);
+      /*to count the number of the ENTER*/
       for(u16 i = 0; i < U16_USER_INPUT_BUFFER_SIZE ; i++)
       {
         if(G_au8DebugScanfBuffer[i]=='\r')
@@ -453,6 +461,7 @@ static void UserApp1SM_Idle(void)
       }
       u8CharCount = DebugScanf(UserApp_au8UserInputBuffer);
       UserApp_au8UserInputBuffer[u8CharCount] = '\0';
+      /*if there is no ENTER, to display the messages according to the numbers*/
       if(u8EnterNum==0)
       {
         if(u8CharCount==0)
@@ -488,6 +497,7 @@ static void UserApp1SM_Idle(void)
           LCDMessage(LINE2_START_ADDR+13, UserApp_au8LCD4);
         }
       }
+      /*to use the ENTEE to start a new line*/
       if(u8EnterNum==1)
       {
         LCDCommand(LCD_CLEAR_CMD);
@@ -495,6 +505,7 @@ static void UserApp1SM_Idle(void)
         LCDClearChars(LINE1_START_ADDR+u8FlagOfEnter,u8CharCount-u8FlagOfEnter);
         LCDMessage(LINE2_START_ADDR, UserApp_au8UserInputBuffer+u8FlagOfEnter+1);
       }
+      /*to many enter, the screen cannnot dispaly */
       if(u8EnterNum>1)
       {
         LCDCommand(LCD_CLEAR_CMD);
