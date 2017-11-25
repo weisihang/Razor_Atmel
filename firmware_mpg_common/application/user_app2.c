@@ -65,6 +65,8 @@ extern volatile u32 G_u32ApplicationFlags;             /* From main.c */
 extern volatile u32 G_u32SystemTime1ms;                /* From board-specific source file */
 extern volatile u32 G_u32SystemTime1s;                 /* From board-specific source file */
 
+extern u8 G_au8DebugScanfBuffer[];  /* From debug.c */
+extern u8 G_u8DebugScanfCharCount;  /* From debug.c */
 
 
 /***********************************************************************************************************************
@@ -80,6 +82,7 @@ static u32 UserApp2_u32SystemTime = 0;
 static LedDisplayListHeadType* UserApp2_psActiveList;
 static bool UserApp2_bSystemRunning = TRUE;
 static bool UserApp2_bSystemDark = FALSE;
+static u8 UserApp_au8UserInputBuffer[U16_USER_INPUT_BUFFER_SIZE  ];  
 
 
 /**********************************************************************************************************************
@@ -360,8 +363,9 @@ Promises:
 void UserApp2Initialize(void)
 {
   u8 au8UserApp1Start2[] = "LED display task started\n\r";
-  
-  /* Initialize the list variables */
+    
+    
+    /* Initialize the list variables */
   UserApp2_sDemoLedCommandList.psFirstCommand = NULL;
   UserApp2_sDemoLedCommandList.u8ListSize = 0;
   UserApp2_sDemoLedCommandList.u32ListEndTime = 0;
@@ -369,6 +373,8 @@ void UserApp2Initialize(void)
   UserApp2_sUserLedCommandList.psFirstCommand = NULL;
   UserApp2_sUserLedCommandList.u8ListSize = 0;
   UserApp2_sUserLedCommandList.u32ListEndTime = 0;
+  
+  
 
 #ifndef DEMO_KNIGHT_RIDER
   /* Set up the standard hard-coded display array */
@@ -685,23 +691,26 @@ BUTTON1 starts the USER code.
 */
 static void UserApp2SM_Idle(void)
 {
+
   /* BUTTON0 selects the Demo List which is always available */
   if(WasButtonPressed(BUTTON0))
   {
     ButtonAcknowledge(BUTTON0);
-   
+    
     /* Turn on the < indicator and set the active list to DEMO */
     LCDMessage(LCD_DMO_ON_CHAR_ADDRESS, "<");
     UserApp2_psActiveList = &UserApp2_sDemoLedCommandList;
     UserApp2_u32SystemTime = 0;
     UserApp2_StateMachine = UserApp2SM_RunCommandList;
   } /* end BUTTON0 code */
-
+  
   /* BUTTON1 selects the User List which may or may not be available */
   if(WasButtonPressed(BUTTON1))
   {
     ButtonAcknowledge(BUTTON1);
-   
+    
+    
+    
     /* If the user list is empty, display a message for 2 seconds to tell the user this.
     Otherwise, start the USER code */
     if(UserApp2_sUserLedCommandList.u8ListSize == 0)
@@ -719,8 +728,9 @@ static void UserApp2SM_Idle(void)
       UserApp2_u32SystemTime = 0;
       UserApp2_StateMachine = UserApp2SM_RunCommandList;
     }
+ 
   } /* end BUTTON1 code */
-
+  
 } /* end UserApp2SM_Idle() */
     
 

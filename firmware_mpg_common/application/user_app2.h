@@ -40,6 +40,7 @@ typedef struct
 Constants / Definitions
 **********************************************************************************************************************/
 //#define USER_LIST_EXAMPLE         /* Define to load a default User LED command list */
+#define U16_USER_INPUT_BUFFER_SIZE  (u16)(DEBUG_SCANF_BUFFER_SIZE + 1)
 #define DEMO_KNIGHT_RIDER         /* Define to load the Knight Rider DEMO LED command list */
 
 
@@ -53,6 +54,7 @@ Constants / Definitions
 #define LCD_PAUSE_CHAR_ADDRESS    (u8)0x4D              /* Starting address for the '||' symbol on the LCD */
 #define LCD_DARK_CHAR_ADDRESS     (u8)0x53              /* LCD address for the 'X' (dark) symbol */
 
+#define NUMOFINPUTLEAST 7 
 
 /**********************************************************************************************************************
 Function Declarations
